@@ -1,6 +1,7 @@
 package com.example.wordleapp
 
 
+import android.graphics.Color
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -37,8 +38,10 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this,"Enter a 4 letter Word", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-
             guessCount++
+
+            val correctness = checkGuess(guess, targetWord)
+
             val guessRow = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER
@@ -47,6 +50,7 @@ class MainActivity : AppCompatActivity() {
 
             for (i in 0 until 4) {
                 val letter = guess[i]
+                val resultChar = correctness[i]
                 val letterView = TextView(this).apply {
                     text = letter.toString()
                     textSize = 30f
@@ -55,6 +59,13 @@ class MainActivity : AppCompatActivity() {
                     gravity = Gravity.CENTER
                     // Set the background to the box you created
                     setBackgroundResource(R.drawable.letter_box)
+                }
+
+                when (resultChar) {
+                    'O' -> letterView.setBackgroundColor(Color.GREEN)
+                    '+' -> letterView.setBackgroundColor(Color.YELLOW)
+                    'X' -> letterView.setBackgroundColor(Color.RED)
+
                 }
 
                 // Set margins to add space between the letters
@@ -84,6 +95,23 @@ class MainActivity : AppCompatActivity() {
             startNewGame(wordcontainer, submitbtn, resetbtn, wordInput)
         }
 
+    }
+
+    private fun checkGuess(guess: String, target: String) : String{
+        val result = StringBuilder()
+
+        for (i in guess.indices){
+            if (guess[i] == target[i]){
+                result.append("O")
+            }
+            else if (target.contains(guess[i])){
+                result.append("+")
+            }
+            else{
+                result.append("X")
+            }
+        }
+        return result.toString()
     }
     private fun startNewGame(wordcontainer: LinearLayout, submitbtn: Button, resetbtn: Button, wordInput: EditText ){
         targetWord = FourLetterWordList.getRandomFourLetterWord()
